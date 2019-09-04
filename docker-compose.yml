@@ -1,0 +1,41 @@
+version: "3.7"
+services:
+  python:
+    build: './python_collector'
+    container_name: python_gps_dtpm_collector
+    restart: always
+    depends_on: 
+      - mongo
+    env_file:
+      - list.env
+    networks:
+      - gps_dtpm_collector
+    volumes:
+      - json:/code/json-file
+    entrypoint:
+      - python 
+      - collector.py
+
+  mongo:
+    image: mongo:4.1
+    container_name: mongodb_tt_collector
+    restart: always
+    ports:
+      - "27018:27017"
+    networks:
+      - gps_dtpm_collector
+    volumes:
+      - data:/data/db
+      - configdb:/data/configdb
+
+networks:
+  gps_dtpm_collector: 
+    name: gps_dtpm_collector
+
+volumes:
+  data:
+    name: mongodb-gps_dtpm-data
+  configdb:
+    name: mongodb-gps_dtpm-configdb
+  json:
+    name: last-json-gps_dtpm
